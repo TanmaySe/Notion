@@ -56,7 +56,7 @@ export const Item = ({id,label,onClick,icon:Icon,active,documentIcon,isSearch,le
             if(!expanded){
                 onExpand?.()
             }
-            //router.push(`/documents/${documentId}`)
+            router.push(`/documents/${documentId}`)
         })
         toast.promise(promise,{
             loading:"Creating new note",

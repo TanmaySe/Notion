@@ -8,6 +8,7 @@ import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useParams } from "next/navigation";
 import { Id } from "@/convex/_generated/dataModel";
+import {useEdgeStore} from "@/lib/edgestore"
 interface EditorProps{
  
     initialContent?:string
@@ -15,10 +16,18 @@ interface EditorProps{
     id:Id<"documents">
 }
 export const Editor = ({initialContent,editable,id}:EditorProps) => {
+    const {edgestore} = useEdgeStore()
+    const handleUpload = async(file:File) => {
+        const response = await edgestore.publicFiles.upload({
+            file
+        })
+        return response.url
+    }
    
     const update = useMutation(api.documents.update)
     const editor = useCreateBlockNote({
-        initialContent:initialContent ? JSON.parse(initialContent) as PartialBlock[] : undefined
+        initialContent:initialContent ? JSON.parse(initialContent) as PartialBlock[] : undefined,
+        uploadFile:handleUpload
     });
     const onChange = () => {
         // Converts the editor's contents from Block objects to Markdown and store to state.
@@ -32,3 +41,4 @@ export const Editor = ({initialContent,editable,id}:EditorProps) => {
   // Renders the editor instance using a React component.
     return <BlockNoteView editor={editor} editable={editable} onChange={onChange}/>;
 }
+
